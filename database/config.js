@@ -12,7 +12,7 @@ const dbConnection = async() => {
             console.log('DB Online')
         
     } catch (error) {
-        console.log(error);
+        console.error('Database connection error:', error.message);
         throw new Error('la conexión con la base de datos ha fallado');
     }
 }
