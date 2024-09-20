@@ -25,6 +25,9 @@ app.use('/api/auth', require('./routes/auth'));
 // ruta de los eventos
 app.use('/api/events', require('./routes/events'));
 
+// ruta admin
+//app.use('/api/adminadmin', require('./routes/admin'));
+
 app.listen(process.env.PORT, () => {
     console.log(`Servidor corriendo en puerto ${process.env.PORT}`);
 })

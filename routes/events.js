@@ -19,11 +19,11 @@ const {validarCampos} = require('../middlewares/validar-campos')
 
 router.use(validarJWT);
 
-router.get('/',
+router.get('/orders',
     [],
     obtenerPedidos);
 
-router.post('/',
+router.post('/new-order',
     [ 
         check('name', 'falta el nombre del producto').not().isEmpty(),
         check('description', 'falta la descripción del producto').not().isEmpty(),

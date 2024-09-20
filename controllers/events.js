@@ -1,4 +1,4 @@
-const Pedido = require('../models/pedido');
+const Pedido = require('../models/producto');
 const {response} = require('express');
 
 
