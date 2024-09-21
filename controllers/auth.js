@@ -38,6 +38,7 @@ const crearUsuario = async(req, res = response) => {
         name: usuario.name,
         email: usuario.email,
         password: usuario.password,
+        role: usuario.role, // Si hay errores, está linea puede ser la culpable
         token
     });
 
@@ -53,49 +54,46 @@ const crearUsuario = async(req, res = response) => {
 }
 
 
-const loginUsuario = async(req,res = response) =>{
-
-    const {email,password} = req.body;
+const loginUsuario = async (req, res = response) => {
+    const { email, password } = req.body;
 
     try {
+        const usuario = await Usuario.findOne({ email });
 
-        let usuario = await Usuario.findOne({email});
-
-        if ( !usuario ) {
+        // Verifica si el usuario existe
+        if (!usuario) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El usuario no existe'
+                msg: 'El usuario no existe con ese correo'
             });
         }
 
-        // Confirmar contraseñas
-
+        // Verifica la contraseña
         const validPassword = bcrypt.compareSync(password, usuario.password);
-
-        if(!validPassword){
+        if (!validPassword) {
             return res.status(400).json({
                 ok: false,
                 msg: 'Contraseña incorrecta'
-            })
+            });
         }
 
-        // Generar jwt
+        // Generar JWT incluyendo el rol del usuario
+        const token = await generarJWT(usuario.id, usuario.name, usuario.role);
 
-        const token = await generarJWT(usuario.id, usuario.name);
-
-        res.json({
+        return res.json({
             ok: true,
             uid: usuario.id,
             name: usuario.name,
+            role: usuario.role,  // Incluimos el rol en la respuesta
             token
-        })
-        
+        });
+
     } catch (error) {
-        console.log(error)
-        res.status(500).json({
+        console.log(error);
+        return res.status(500).json({
             ok: false,
-            msg: 'por favor hable con el administrador'
-        })
+            msg: 'Por favor hable con el administrador'
+        });
     }
 }
 

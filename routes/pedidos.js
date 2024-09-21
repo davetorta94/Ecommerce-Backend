@@ -1,5 +1,5 @@
 const {Router} = require('express');
-const {obtenerPedidos, crearPedido, actualizarPedido, eliminarPedido } = require('../controllers/events');
+const {obtenerProductos, crearPedido, actualizarPedido, eliminarPedido } = require('../controllers/pedidos');
 const {validarJWT} = require('../middlewares/validar-jwt');
 const router = Router();
 const {check} = require('express-validator');
@@ -8,37 +8,31 @@ const {validarCampos} = require('../middlewares/validar-campos')
 // router.use(validarJWT); Si la pones debajo de una ruta, esa será publica y no pasará por el middleware pero el resto si
 
 
-/* rutas
 
-    /api/events
-
-*/
-
-// deben pasar por la validación del jwt
-// eventos
 
 router.use(validarJWT);
 
-router.get('/orders',
-    [],
-    obtenerPedidos);
+router.get('/productos', obtenerProductos);
 
 router.post('/new-order',
     [ 
-        check('name', 'falta el nombre del producto').not().isEmpty(),
-        check('description', 'falta la descripción del producto').not().isEmpty(),
-        check('price', 'falta el precio del producto').not().isEmpty(),
-        //check('price', 'falta el precio del producto').isNumeric(),
+        check('name', 'El nombre del producto es obligatorio').not().isEmpty(),
+        check('description', 'La descripción es obligatoria').not().isEmpty(),
+        check('price', 'El precio es obligatorio').isFloat({ min: 0 }),
         validarCampos,
     ],
     crearPedido);
 
 router.put('/:id',
-    [],
+    [
+        check('id', 'El ID del pedido no es válido').isMongoId(),
+    ],
     actualizarPedido);
 
 router.delete('/:id',
-    [],
+    [
+        check('id', 'El ID del pedido no es válido').isMongoId(),
+    ],
     eliminarPedido);
 
 

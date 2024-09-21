@@ -1,16 +1,23 @@
+const Usuario = require('../models/usuario');
 const Pedido = require('../models/producto');
 const {response} = require('express');
 
 
-const obtenerPedidos = async(req, res = response) => {
-    
-    const pedidos = await Pedido.find();
-                                
-    
-    res.json({
-        ok: true,
-       pedidos: pedidos
-    })
+const obtenerProductos = async(req, res = response) => {
+    try {
+        const productos = await Producto.find();
+
+        res.json({
+            ok: true,
+            productos: productos
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error al obtener los productos'
+        });
+    }
 }
 
 
@@ -128,7 +135,7 @@ const eliminarPedido = async(req, res = response) => {
 }
 
 module.exports = {
-    obtenerPedidos,
+    obtenerProductos,
     crearPedido,
     actualizarPedido,
     eliminarPedido

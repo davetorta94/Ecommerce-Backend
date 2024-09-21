@@ -1,3 +1,4 @@
+const Usuario = require('../models/usuario');
 const Producto = require('../models/producto');
 const { response } = require('express');
 
@@ -120,5 +121,49 @@ const editarProducto = async(req, res = response) => {
     }
 };
 
-module.exports = { crearProducto, eliminarProducto, editarProducto };
+const loginAdmin = async (req, res = response) => {
+    const { email, password } = req.body;
+
+    try {
+        const usuario = await Usuario.findOne({ email });
+
+        // Verificar si el usuario existe y si tiene el rol de admin
+        if (!usuario || usuario.role !== 'admin') {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Usuario no autorizado'
+            });
+        }
+
+        // Verificar contraseña
+        const validPassword = bcrypt.compareSync(password, usuario.password);
+
+        if (!validPassword) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'Contraseña incorrecta'
+            });
+        }
+
+        // Generar JWT para el administrador
+        const token = await generarJWT(usuario.id, usuario.name, usuario.role);
+
+        return res.json({
+            ok: true,
+            uid: usuario.id,
+            name: usuario.name,
+            role: usuario.role,
+            token
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            ok: false,
+            msg: 'Por favor hable con el administrador'
+        });
+    }
+};
+
+module.exports = { crearProducto, eliminarProducto, editarProducto, loginAdmin };
 
